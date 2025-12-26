@@ -98,13 +98,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Navbar background on scroll
+// Navbar background and active link updates on scroll
 const navbar = document.querySelector('.navbar');
 let lastScroll = 0;
+let ticking = false;
 
-window.addEventListener('scroll', () => {
+function updateOnScroll() {
     const currentScroll = window.pageYOffset;
 
+    // Update navbar background
     if (currentScroll > 100) {
         navbar.style.background = 'rgba(10, 14, 39, 0.98)';
         navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.3)';
@@ -113,7 +115,40 @@ window.addEventListener('scroll', () => {
         navbar.style.boxShadow = 'none';
     }
 
+    // Update active nav link
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach(current => {
+        const sectionHeight = current.offsetHeight;
+        const sectionTop = current.offsetTop - 100;
+        const sectionId = current.getAttribute('id');
+        
+        if (currentScroll > sectionTop && currentScroll <= sectionTop + sectionHeight) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${sectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    });
+
+    // Parallax effect for hero section
+    if (heroSection) {
+        let parallaxSpeed = 0.5;
+        heroSection.style.transform = `translateY(${currentScroll * parallaxSpeed}px)`;
+    }
+
     lastScroll = currentScroll;
+    ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            updateOnScroll();
+        });
+        ticking = true;
+    }
 });
 
 // Intersection Observer for fade-in animations
@@ -147,51 +182,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Dynamic year in footer
 const currentYear = new Date().getFullYear();
-document.querySelector('.footer p').textContent = 
-    `© ${currentYear} Souradip Biswas. Built with passion and creativity.`;
+const footerCopyright = document.querySelector('.footer-copyright');
+if (footerCopyright) {
+    footerCopyright.textContent = `© ${currentYear} Souradip Biswas. Built with passion and creativity.`;
+}
 
-// Add parallax effect to hero section
+// Reserved for future cursor trail effect implementation
+
+// Get hero section for parallax effect
 let heroSection = document.querySelector('.hero');
-
-window.addEventListener('scroll', () => {
-    let scrolled = window.pageYOffset;
-    if (heroSection) {
-        let parallaxSpeed = 0.5;
-        heroSection.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
-    }
-});
-
-// Cursor trail effect (subtle)
-let mouseX = 0;
-let mouseY = 0;
-let cursorX = 0;
-let cursorY = 0;
-
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-// Add active state to nav links based on scroll position
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section[id]');
-    const scrollY = window.pageYOffset;
-
-    sections.forEach(current => {
-        const sectionHeight = current.offsetHeight;
-        const sectionTop = current.offsetTop - 100;
-        const sectionId = current.getAttribute('id');
-        
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
-    });
-});
 
 // Add loading animation
 window.addEventListener('load', () => {
