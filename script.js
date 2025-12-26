@@ -122,12 +122,23 @@ contactForm.addEventListener('submit', (e) => {
     const message = document.getElementById('message').value;
 
     // In a real application, you would send this data to a server
-    // For now, we'll just show a success message
+    // For now, we'll show a success message in the page
     
-    alert(`Thank you for your message, ${name}! I'll get back to you soon.`);
+    // Create success message
+    const successMsg = document.createElement('div');
+    successMsg.style.cssText = 'background: #4ade80; color: white; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;';
+    successMsg.textContent = `Thank you for your message, ${name}! I'll get back to you soon.`;
+    
+    // Insert message after form
+    contactForm.parentNode.insertBefore(successMsg, contactForm.nextSibling);
     
     // Reset form
     contactForm.reset();
+    
+    // Remove message after 5 seconds
+    setTimeout(() => {
+        successMsg.remove();
+    }, 5000);
 });
 
 // ===== Active Navigation Link Highlighting =====
@@ -144,31 +155,15 @@ function highlightNavigation() {
 
         if (navLink) {
             if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                navLink.style.color = '#6366f1';
+                navLink.style.color = 'var(--primary-color)';
             } else {
-                navLink.style.color = '#333';
+                navLink.style.color = 'var(--text-color)';
             }
         }
     });
 }
 
 window.addEventListener('scroll', highlightNavigation);
-
-// ===== Add Fade-in Animation Class =====
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(style);
 
 // ===== Initialize Animations on Page Load =====
 window.addEventListener('load', () => {
